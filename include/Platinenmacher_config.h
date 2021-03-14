@@ -12,6 +12,8 @@
 #define __weak __attribute__((weak))
 #define EINK_GDEW0154Z17
 
+#include "hw/gpio.h"
+
 /* 3 color ePaper display */
 #include "display/display.h"
 #include "display/eink/gdew0154z17.h"
