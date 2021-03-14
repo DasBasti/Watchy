@@ -6,5 +6,6 @@
 #define SM_MONO_H
 
 extern const unsigned char sm_mono[];
+extern const unsigned char sm_mono2[];
 
 #endif // SM_MONO

@@ -21,9 +21,9 @@ void sw_splashscreen(display_t *dsp)
     display_fill(dsp, WHITE);
 
     // draw black and red rectangle around screen
-    display_rect_draw(dsp, 1, 1, 147, 147, BLACK);
-    display_rect_draw(dsp, 2, 2, 145, 145, RED);
-    display_rect_draw(dsp, 3, 3, 143, 143, BLACK);
+    display_rect_draw(dsp, 1, 1, 149, 149, BLACK);
+    display_rect_draw(dsp, 2, 2, 147, 147, RED);
+    display_rect_draw(dsp, 3, 3, 145, 145, BLACK);
 
     display_rect_fill(dsp, 10, 10, 132, 132, RED);
 
@@ -32,7 +32,7 @@ void sw_splashscreen(display_t *dsp)
     sprintf(h, "%s", HW_REVISION_STR);
 
     //    display_text_draw(&dsp, &x8, (rand() % 154), (rand() % 154), h, COLOR_BLACK);
-    display_text_draw(dsp, &fnt6x8, 57, 95, h, BLACK);
+    display_text_draw(dsp, &fnt6x8, 57, 98, h, BLACK);
 
     //    sprintf(h, "%s", build_date);
     //    display_text_draw(dsp, &fnt6x8, 15, 125, h, COLOR_BLACK);
@@ -49,7 +49,7 @@ void sw_splashscreen(display_t *dsp)
 
     // draw image
     //    display_image_draw_transparent(&dsp, sm_mono, (rand() % 154), (rand() % 154), COLOR_BLACK);
-    //display_image_draw_(dsp, sm_mono, 40, 12, WHITE);
+    display_draw_image_colored(dsp, sm_mono, 40, 9, BLACK);
 
     display_commit_fb(dsp); // we render here blocking.
 }
