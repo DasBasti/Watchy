@@ -18,7 +18,6 @@ void sw_splashscreen(display_t *dsp)
 {
     font_t fnt6x8;
     font_load_from_array(&fnt6x8, font6x8, font6x8_name);
-    display_fill(dsp, WHITE);
 
     // draw black and red rectangle around screen
     display_rect_draw(dsp, 1, 1, 149, 149, BLACK);

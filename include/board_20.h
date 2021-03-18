@@ -17,8 +17,6 @@ extern "C"
 #define BUTTON_3 32
 #define BUTTON_4 4
 
-#define SDA 21
-#define SCL 22
 #define ADC_PIN 33
 #define RTC_PIN 27
 #define VIB_MOTOR_PIN 13
