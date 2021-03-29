@@ -1,5 +1,8 @@
 #include <Arduino.h>
 #include <RV3028C7.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include "time.h"
 
 extern "C"
 {
@@ -9,20 +12,82 @@ extern "C"
 #include "sw_rtc.h"
 }
 
+const char *ssid = "Zuck";
+const char *password = "12348765";
+
+const char *ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 3600;
+const int daylightOffset_sec = 3600;
+
 display_t *dsp;
 static gdew0154z17_io_config_t io = {};
 RV3028C7 rtc;
 now_t *now;
 bool update_screen = false;
+HTTPClient http;
 
 void rtc_update()
 {
 }
 
+void setRTC()
+{
+  char time_buf[20];
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo))
+  {
+    Serial.println("Failed to obtain time");
+    return;
+  }
+
+  strftime(time_buf, sizeof(time_buf), "%FT%H:%M:%S", &timeinfo);
+  rtc.setDateTimeFromISO8601(time_buf); // Hard-coded for testing
+  rtc.synchronize();                    // Writes the new date time to RTC
+}
+
+void handleButtonPress()
+{
+  Serial.print("Connecting");
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  /*
+  http.begin(time_url);
+
+  // Send HTTP GET request
+  int httpResponseCode = http.GET();
+
+  if (httpResponseCode > 0)
+  {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    String payload = http.getString();
+    Serial.println(payload);
+    rtc.setDateTimeFromISO8601(payload); // Hard-coded for testing
+    rtc.synchronize();                   // Writes the new date time to RTC
+  }
+  else
+  {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+
+  */
+
+  Serial.print("Connected, IP address: ");
+  Serial.println(WiFi.localIP());
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  setRTC();
+}
+
 void setup()
 {
-  //Serial.begin(115200);
-  //Serial.println();
+  Serial.begin(115200);
+  Serial.println();
+  WiFi.begin(ssid, password);
   // set up GPIO for Display
   io.sclk = DISPLAY_SCLK; // spi clock
   io.mosi = DISPLAY_MOSI; // spi data in
@@ -40,12 +105,10 @@ void setup()
   Wire.begin();
   while (rtc.begin() == false)
   {
-    //Serial.println("Failed to detect RV-3028-C7!");
+    Serial.println("Failed to detect RV-3028-C7!");
     delay(5000);
   }
   rtc.disableClockOutput();
-  //rtc.setDateTimeFromISO8601("2021-03-18T22:29:00"); // Hard-coded for testing
-  //rtc.synchronize();                                 // Writes the new date time to RTC
 
   // set up SPI for display
   dsp = GDEW0154Z17_Init(DISPLAY_ROTATE_0, &io);
@@ -59,8 +122,8 @@ void setup()
   switch (wakeup_reason)
   {
   case ESP_SLEEP_WAKEUP_EXT1: //button Press
-                              //handleButtonPress();
-                              //break;
+    handleButtonPress();
+    //break;
   case ESP_SLEEP_WAKEUP_EXT0: //RTC Alarm
     display_fill(dsp, WHITE);
     sw_watch1_init(dsp, now);
