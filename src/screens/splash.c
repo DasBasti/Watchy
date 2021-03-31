@@ -13,8 +13,9 @@
 
 #include "icons/sm_mono.h"
 #include "font/font6x8.h"
+#include "sw_rtc.h"
 
-void sw_splashscreen(display_t *dsp)
+void sw_splashscreen(display_t *dsp, now_t *n)
 {
     font_t fnt6x8;
     font_load_from_array(&fnt6x8, font6x8, font6x8_name);
@@ -39,6 +40,11 @@ void sw_splashscreen(display_t *dsp)
     sprintf(h, "%.5s", build_git_sha);
     display_text_draw(dsp, &fnt6x8, 13, 133, h, BLACK);
 
+    sprintf(h, "%02d", n->minute);
+    display_text_draw(dsp, &fnt6x8, 126, 133, h, WHITE);
+
+    sprintf(h, "%02d:", n->hour);
+    display_text_draw(dsp, &fnt6x8, 102, 133, h, WHITE);
     /*    sprintf(h, "%02d:%02d:%02d", (12), (34), (56));
 
     display_text_draw(dsp, xfnt[1], 10, 20, h, COLOR_BLACK);
@@ -49,6 +55,4 @@ void sw_splashscreen(display_t *dsp)
     // draw image
     //    display_image_draw_transparent(&dsp, sm_mono, (rand() % 154), (rand() % 154), COLOR_BLACK);
     display_draw_image_colored(dsp, sm_mono, 40, 9, BLACK);
-
-    display_commit_fb(dsp); // we render here blocking.
 }
