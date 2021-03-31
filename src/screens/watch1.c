@@ -18,7 +18,7 @@ static display_t *dsp;
 now_t *now;
 static uint8_t cycles = 0;
 static int8_t old_hours = -11, old_minutes = -11, old_day = -1;
-
+uint16_t steps = 0;
 static void draw_vertical_bar(uint8_t x, uint8_t y)
 {
     // draw large box
@@ -238,6 +238,10 @@ static void full_screen()
 #endif
         old_day = day;
     }
+    char h[5];
+    sprintf(h, "%4d", steps);
+    display_text_draw(dsp, &fnt8x8, 104, 12, h, WHITE);
+
     //dsp->update_pending = 1;
 }
 
@@ -261,10 +265,11 @@ void sw_watch1_ble_status_cb()
 /**
  * @brief initailizes the display and does a full update in blocking mode
  */
-void sw_watch1_init(display_t *d, now_t *n)
+void sw_watch1_init(display_t *d, now_t *n, uint16_t s)
 {
     dsp = d;
     now = n;
+    steps = s;
     //dsp->partial_update = partial_update;
     //NRF_LOG_INFO("Update: %d", partial_update);
     //sw_watch1(now);
