@@ -18,7 +18,7 @@ static display_t *dsp;
 now_t *now;
 static uint8_t cycles = 0;
 static int8_t old_hours = -11, old_minutes = -11, old_day = -1;
-uint16_t steps = 0;
+uint32_t steps = 0;
 static void draw_vertical_bar(uint8_t x, uint8_t y)
 {
     // draw large box
@@ -162,6 +162,39 @@ static void draw_digit(uint8_t position, uint8_t number)
     }
 }
 
+static void nerd_steps(char *number, uint32_t steps)
+{
+    if (steps < 1000)
+    {
+        sprintf(number, "%03d", steps);
+    }
+    else if (steps < 10000)
+    {
+        // 1K0 9K9
+        uint8_t kilo = steps / 1000;
+        uint8_t cents = (steps % 1000) / 100;
+        sprintf(number, "%01dK%01d", kilo, cents);
+    }
+    else if (steps < 100000)
+    {
+        // 10K 99K
+        uint8_t kilo = steps / 1000;
+        sprintf(number, "%02dK", kilo);
+    }
+    else if (steps < 10000000)
+    {
+        // 0M1 9M9
+        uint8_t kilo = steps / 1000000;
+        uint8_t cents = (steps % 1000000) / 100000;
+        sprintf(number, "%01dM%01d", kilo, cents);
+    }
+    else
+    {
+        // oo
+        sprintf(number, "inf");
+    }
+}
+
 static void full_screen()
 {
     font_t fnt8x8;
@@ -238,8 +271,8 @@ static void full_screen()
 #endif
         old_day = day;
     }
-    char h[5];
-    sprintf(h, "%4d", steps);
+    char h[4];
+    nerd_steps(h, steps);
     display_text_draw(dsp, &fnt8x8, 104, 12, h, WHITE);
 
     //dsp->update_pending = 1;
@@ -265,7 +298,7 @@ void sw_watch1_ble_status_cb()
 /**
  * @brief initailizes the display and does a full update in blocking mode
  */
-void sw_watch1_init(display_t *d, now_t *n, uint16_t s)
+void sw_watch1_init(display_t *d, now_t *n, uint32_t s)
 {
     dsp = d;
     now = n;

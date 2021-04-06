@@ -29,8 +29,8 @@ RV3028C7 rtc;
 LSM6DSLSensor AccGyr(&Wire, LSM6DSL_ACC_GYRO_I2C_ADDRESS_LOW);
 now_t *now;
 bool update_screen = false;
-HTTPClient http;
-uint16_t step_counts;
+//HTTPClient http;
+uint32_t step_counts;
 BLE ble;
 bool stay_active = false;
 bool update_needed = false;
@@ -132,20 +132,18 @@ void setup()
   }
   rtc.disableClockOutput();
 
-  AccGyr.Get_Step_Counter(&step_counts);
+  //AccGyr.Get_Step_Counter(&step_counts);
+  step_counts = 10000000 -1;
 
   // set up SPI for display
   dsp = GDEW0154Z17_Init(DISPLAY_ROTATE_0, &io);
-  //if (!dsp)
-  //Serial.println("E-Ink Display init failed");
-  //Serial.println("E-Ink Display initialized");
+  if (!dsp)
+    Serial.println("E-Ink Display init failed");
 
   esp_sleep_wakeup_cause_t wakeup_reason;
   wakeup_reason = esp_sleep_get_wakeup_cause(); //get wake up reason
   //Serial.println(wakeup_reason);
   handle_wakeup(wakeup_reason);
-
-  //go_to_sleep();
 }
 
 void loop()
