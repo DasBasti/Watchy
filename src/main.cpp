@@ -14,6 +14,13 @@ extern "C"
 #include "sw_rtc.h"
 }
 
+#ifdef DEBUG
+#define PRINT Serial.print
+#define PRINTLN Serial.println
+#else
+#define PRINT(a)
+#define PRINTLN(a)
+#endif
 const char *ssid = "Zuck";
 const char *password = "12348765";
 
@@ -54,7 +61,7 @@ void go_to_sleep()
     rtc.enableInterrupt(INTERRUPT_PERIODIC_COUNTDOWN_TIMER);
     rtc.startPeriodicCountdownTimer();
 
-    Serial.println("Go to sleep");
+    PRINTLN("Go to sleep");
     Serial.flush();
     esp_sleep_enable_ext0_wakeup((gpio_num_t)RTC_PIN, 0);                 //enable deep sleep wake on RTC interrupt
     esp_sleep_enable_ext1_wakeup(BTN_PIN_MASK, ESP_EXT1_WAKEUP_ANY_HIGH); //enable deep sleep wake on button press
@@ -68,7 +75,7 @@ void handle_wakeup(esp_sleep_wakeup_cause_t wakeup_reason)
   now->month = rtc.getDateTimeComponent(DATETIME_MONTH);
   now->minute = rtc.getDateTimeComponent(DATETIME_MINUTE);
   now->hour = rtc.getDateTimeComponent(DATETIME_HOUR);
-  Serial.println(rtc.getCurrentDateTime());
+  PRINTLN(rtc.getCurrentDateTime());
 
   switch (wakeup_reason)
   {
@@ -81,7 +88,7 @@ void handle_wakeup(esp_sleep_wakeup_cause_t wakeup_reason)
     sw_watch1_init(dsp, now, step_counts);
     sw_watch1();
     display_commit_fb(dsp);
-    Serial.println("display");
+    PRINTLN("display");
     break;
   default: // Power On Reset
     sw_splashscreen(dsp, now);
@@ -102,7 +109,7 @@ void updateRTC(char *time)
 
 void handleButtonPress()
 {
-  Serial.println("BLE on");
+  PRINTLN("BLE on");
   ble.setCtsUpdateCb(updateRTC);
   ble.begin("Schmartwatch");
   stay_active = true;
@@ -111,7 +118,7 @@ void handleButtonPress()
 void setup()
 {
   Serial.begin(115200);
-  Serial.println();
+  PRINTLN("");
   // set up GPIO for Display
   io.sclk = DISPLAY_SCLK; // spi clock
   io.mosi = DISPLAY_MOSI; // spi data in
@@ -127,18 +134,19 @@ void setup()
   Wire.begin();
   while (rtc.begin() == false)
   {
-    Serial.println("Failed to detect RV-3028-C7!");
+    PRINTLN("Failed to detect RV-3028-C7!");
     delay(5000);
   }
   rtc.disableClockOutput();
 
-  //AccGyr.Get_Step_Counter(&step_counts);
-  step_counts = 10000000 -1;
+  uint16_t steps;
+  AccGyr.Get_Step_Counter(&steps);
+  step_counts = steps;
 
   // set up SPI for display
   dsp = GDEW0154Z17_Init(DISPLAY_ROTATE_0, &io);
   if (!dsp)
-    Serial.println("E-Ink Display init failed");
+    PRINTLN("E-Ink Display init failed");
 
   esp_sleep_wakeup_cause_t wakeup_reason;
   wakeup_reason = esp_sleep_get_wakeup_cause(); //get wake up reason
@@ -162,6 +170,7 @@ void loop()
 
   if (ble.updateStatus() == 4)
   {
+    PRINTLN("Disable BLE");
     stay_active = false;
   }
 }
