@@ -15,10 +15,9 @@
 #include "sw_rtc.h"
 
 static display_t *dsp;
-now_t *now;
 static uint8_t cycles = 0;
 static int8_t old_hours = -11, old_minutes = -11, old_day = -1;
-uint32_t steps = 0;
+static state_t *state;
 static void draw_vertical_bar(uint8_t x, uint8_t y)
 {
     // draw large box
@@ -209,8 +208,8 @@ static void full_screen()
     display_rect_fill(dsp, 71, 98, 6, 4, BLACK);
     display_rect_fill(dsp, 72, 97, 4, 6, BLACK);
 
-    uint8_t hours = now->hour;
-    uint8_t minutes = now->minute; //rtc_minutes();
+    uint8_t hours = state->now->hour;
+    uint8_t minutes = state->now->minute; //rtc_minutes();
     if (hours % 10 != old_hours % 10)
     {
         draw_digit(2, hours % 10);
@@ -241,14 +240,14 @@ static void full_screen()
 
     // draw white text above black background of chips
 
-    uint8_t day = now->day; //rtc_day();
+    uint8_t day = state->now->day; //rtc_day();
     if (old_day != day)
     { //draw the top area again if we update day and month
         display_draw_image_colored(dsp, (uint8_t *)sm_seven_segment_top, 0, 0, BLACK);
         char h[3];
         sprintf(h, "%02d", day);
         display_text_draw(dsp, &fnt8x8, 38, 14, h, WHITE);
-        sprintf(h, "%02d", now->month);
+        sprintf(h, "%02d", state->now->month);
         display_text_draw(dsp, &fnt8x8, 38, 24, h, WHITE);
 #if 0
         if (dsp->partial_window.ys > 10) // if startpoint of y is above this drawen object we want to start here
@@ -272,8 +271,11 @@ static void full_screen()
         old_day = day;
     }
     char h[4];
-    nerd_steps(h, steps);
-    display_text_draw(dsp, &fnt8x8, 104, 12, h, WHITE);
+    nerd_steps(h, state->steps);
+    display_text_draw(dsp, &fnt8x8, 104, 14, h, WHITE);
+
+    sprintf(h, "%d%%", state->battery_percent);
+    display_text_draw(dsp, &fnt8x8, 104, 24, h, WHITE);
 
     //dsp->update_pending = 1;
 }
@@ -298,14 +300,13 @@ void sw_watch1_ble_status_cb()
 /**
  * @brief initailizes the display and does a full update in blocking mode
  */
-void sw_watch1_init(display_t *d, now_t *n, uint32_t s)
+void sw_watch1_init(display_t *d, state_t *_state)
 {
     dsp = d;
-    now = n;
-    steps = s;
+    state = _state;
     //dsp->partial_update = partial_update;
     //NRF_LOG_INFO("Update: %d", partial_update);
-    //sw_watch1(now);
+    //sw_watch1(state->now);
     //display_render(dsp);
     //dsp->partial_update = true;
 }
