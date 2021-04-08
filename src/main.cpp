@@ -93,9 +93,10 @@ void handle_wakeup(esp_sleep_wakeup_cause_t wakeup_reason)
     PRINTLN("display");
     break;
   default: // Power On Reset
-    sw_splashscreen(dsp, &state);
     AccGyr.begin();
+    AccGyr.Enable_X();
     AccGyr.Enable_Pedometer();
+    sw_splashscreen(dsp, &state);
     display_commit_fb(dsp);
     break;
   }
@@ -155,7 +156,9 @@ void setup()
 
   // after Dispaly init we have ADC calue for battery
   state.battery *= 2; // we have 1:1 Vdif
-  state.battery_percent = map(state.battery, 3650, 4200, 0, 100);
+  if (state.battery > 4100)
+    state.battery = 4100;
+  state.battery_percent = map(state.battery, 3650, 4100, 0, 100);
 
   esp_sleep_wakeup_cause_t wakeup_reason;
   wakeup_reason = esp_sleep_get_wakeup_cause(); //get wake up reason

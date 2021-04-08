@@ -274,7 +274,10 @@ static void full_screen()
     nerd_steps(h, state->steps);
     display_text_draw(dsp, &fnt8x8, 104, 14, h, WHITE);
 
-    sprintf(h, "%d%%", state->battery_percent);
+    if (state->battery_percent == 100)
+        sprintf(h, "MAX");
+    else
+        sprintf(h, "%d%%", state->battery_percent);
     display_text_draw(dsp, &fnt8x8, 104, 24, h, WHITE);
 
     //dsp->update_pending = 1;
