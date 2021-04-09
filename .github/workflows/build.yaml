@@ -16,7 +16,7 @@ jobs:
     - name: Checkout submodules
       uses: textbook/git-checkout-submodule-action@master
       with:
-      remote: true
+        remote: true
 
     - name: Set up Python
       uses: actions/setup-python@v2.2.1
