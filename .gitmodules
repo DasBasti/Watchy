@@ -1,0 +1,9 @@
+[submodule "lib/RV-3028-C7-Arduino-Library"]
+	path = lib/RV-3028-C7-Arduino-Library
+	url = https://github.com/DasBasti/RV-3028-C7-Arduino-Library.git
+[submodule "lib/lib/Platinenmacher"]
+	path = lib/lib/Platinenmacher
+	url = https://bitbucket.org/DasBasti/platinenmacher.git
+[submodule "lib/Platinenmacher"]
+	path = lib/Platinenmacher
+	url = https://bitbucket.org/DasBasti/platinenmacher.git
