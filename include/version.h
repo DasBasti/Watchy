@@ -1,5 +1,5 @@
 #ifndef VERSION_H
 #define VERSION_H
-extern const char *build_date;    /* 2021-03-03 20:26 */
-extern const char *build_git_sha; /* f4f510aab425c466b07528a78a230aa33d1ec575 */
+extern const char *build_date;    /* initialized in version.c */
+extern const char *build_git_sha; /* initialized in version.c */
 #endif  /* VERSION_H */
