@@ -4,3 +4,6 @@
 [submodule "lib/lib/Platinenmacher"]
 	path = lib/lib/Platinenmacher
 	url = https://bitbucket.org/DasBasti/platinenmacher.git
+[submodule "lib/Platinenmacher"]
+	path = lib/Platinenmacher
+	url = https://bitbucket.org/DasBasti/platinenmacher.git
